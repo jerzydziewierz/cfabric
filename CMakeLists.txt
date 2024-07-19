@@ -31,3 +31,5 @@ target_link_libraries(tests PRIVATE spdlog::spdlog GTest::GTest GTest::Main $<$<
 enable_testing()
 add_test(NAME cfabric_tests COMMAND tests)
 
+
+
