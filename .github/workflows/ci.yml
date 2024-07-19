@@ -9,7 +9,7 @@ jobs:
 
     steps:
     - name: Check out code
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: Build project
       uses: nicledomaS/cmake_build_action@v1.4
