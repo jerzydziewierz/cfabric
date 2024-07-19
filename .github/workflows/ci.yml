@@ -14,8 +14,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update 
-        sudo apt-get install -y libspdlog-dev
-        sudo apt-get install -y libgtest-dev 
+        sudo apt-get install -y \
+          libspdlog-dev \
+          libgtest-dev 
     
 
     - name: Build project
