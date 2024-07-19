@@ -1,0 +1,4 @@
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/home/mib07150/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/mib07150/git/private/learning/cfabric -B /home/mib07150/git/private/learning/cfabric/build
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/mib07150/git/private/learning/cfabric/build

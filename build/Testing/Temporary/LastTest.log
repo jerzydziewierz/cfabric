@@ -1,0 +1,37 @@
+Start testing: Jul 19 22:11 BST
+----------------------------------------------------------
+1/1 Testing: cfabric_tests
+1/1 Test: cfabric_tests
+Command: "/home/mib07150/git/private/learning/cfabric/build/tests"
+Directory: /home/mib07150/git/private/learning/cfabric/build
+"cfabric_tests" start time: Jul 19 22:11 BST
+Output:
+----------------------------------------------------------
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from CFabricTest
+[ RUN      ] CFabricTest.ExampleTest1
+[2024-07-19 22:11:48.869] [info] [demo_subsystem.hpp:39] unnamed is doing some work
+[       OK ] CFabricTest.ExampleTest1 (0 ms)
+[ RUN      ] CFabricTest.createPingObject
+[       OK ] CFabricTest.createPingObject (0 ms)
+[ RUN      ] CFabricTest.ManyPlayers
+[2024-07-19 22:11:48.889] [info] [test_cfabric.cpp:45] est. performance, many responders: 10000 responders: 12011211.3 responses/sec ( 12011.2 k/sec, 12.0 M/sec )
+[       OK ] CFabricTest.ManyPlayers (22 ms)
+[ RUN      ] CFabricTest.ManyResponses
+[2024-07-19 22:11:48.894] [info] [test_cfabric.cpp:67] est.performance, 2 responders, 1000 responses: 695917.0 passes per second (695.9 k/sec, 0.7 M/sec)
+[       OK ] CFabricTest.ManyResponses (2 ms)
+[----------] 4 tests from CFabricTest (25 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (25 ms total)
+[  PASSED  ] 4 tests.
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"cfabric_tests" end time: Jul 19 22:11 BST
+"cfabric_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Jul 19 22:11 BST

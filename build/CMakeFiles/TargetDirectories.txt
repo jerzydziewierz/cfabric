@@ -1,0 +1,5 @@
+/home/mib07150/git/private/learning/cfabric/build/CMakeFiles/demo1.dir
+/home/mib07150/git/private/learning/cfabric/build/CMakeFiles/tests.dir
+/home/mib07150/git/private/learning/cfabric/build/CMakeFiles/test.dir
+/home/mib07150/git/private/learning/cfabric/build/CMakeFiles/edit_cache.dir
+/home/mib07150/git/private/learning/cfabric/build/CMakeFiles/rebuild_cache.dir

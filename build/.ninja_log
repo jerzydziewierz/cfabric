@@ -1,0 +1,6 @@
+# ninja log v5
+0	701	1721423447931760312	CMakeFiles/tests.dir/src/tests/test_main.cpp.o	719c14c083285845
+1	851	1721423504880465379	CMakeFiles/demo1.dir/src/demo1.cpp.o	c669a386bf0c7c39
+851	935	1721423504964466419	demo1	d81d21c5b740d4e0
+1	1376	1721423505404471869	CMakeFiles/tests.dir/src/tests/test_cfabric.cpp.o	38dba8b410db31cc
+1376	1529	1721423505560473799	tests	7ed0175e8cef0079
