@@ -7,6 +7,6 @@ int main()
     BigSystem::MySubsystems::MySubsystem1 s1(broker, "s1");
     BigSystem::MySubsystems::MySubsystem1 s2(broker, "s2");
     BigSystem::MySubsystems::MySubsystem1 s3(broker, "s3");
-    s1.doWork();
+    s1.work();
     return 0;
 }

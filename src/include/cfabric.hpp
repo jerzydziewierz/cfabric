@@ -28,6 +28,8 @@ namespace Cfabric {
         //! the message could have no fields, in which case it is a signal. these are useful for simple notifications and are good performance-wise
         struct ping{
 
+            ping() = default;
+
             //! if the message is not default-copyable, it must have a copy constructor!
             ping(const ping& other) = default;
             };
@@ -39,7 +41,7 @@ namespace Cfabric {
         struct string {
             std::string source;
             std::string content;
-            string(std::string source, std::string content) : source(source), content(content) {}
+            string(std::string source = "unset", std::string content = "unset") : source(source), content(content) {}
 
             //! if the message is not default-copyable, it must have an implemented explicit copy constructor!
             //! this becomes critically important if your message contains a pointer to something, or other non-trivially copyable data
