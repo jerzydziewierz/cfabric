@@ -11,6 +11,18 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
+    - name: Install dependencies
+      run: |
+        sudo apt-get update 
+        sudo apt-get install -y \ 
+          libspdlog-dev \
+          libgtest-dev \ 
+          cmake \
+          g++ \
+          make \
+          # end of list
+    
+
     - name: Build project
       uses: nicledomaS/cmake_build_action@v1.4
       with:
