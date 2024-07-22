@@ -1,8 +1,10 @@
 #pragma once
-#ifndef CFABRIC_MESSAGE_TYPES_HPP
-#define CFABRIC_MESSAGE_TYPES_HPP
+#ifndef CFABRICDEMO1_MESSAGE_TYPES_HPP
+#define CFABRICDEMO1_MESSAGE_TYPES_HPP
 
-namespace Cfabric {
+namespace BigSystem {
+
+    namespace MySubsystems {
         //! namespace for message types. Add your message types here.
         namespace MsgTypes {
 
@@ -60,5 +62,5 @@ namespace Cfabric {
 
         } // namespace MsgTypes
     } // namespace Cfabric
-
-#endif //CFABRIC_MESSAGE_TYPES_HPP
+}
+#endif //CFABRICDEMO1_MESSAGE_TYPES_HPP

@@ -5,8 +5,8 @@
 
 TEST(CFabricTest, ExampleTest1) {
 
-    std::shared_ptr<Cfabric::Broker> broker = std::make_shared<Cfabric::Broker>();
-    Cfabric::MsgTypes::string msg("source", "42");
+    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
+    BigSystem::MySubsystems::MsgTypes::string msg("source", "42");
     BigSystem::MySubsystems::PingPongResponder s1(broker, "s1");
     BigSystem::MySubsystems::PingPongResponder s2(broker, "s2");
     BigSystem::MySubsystems::PingPongResponder s3(broker, "s3");
@@ -16,14 +16,14 @@ TEST(CFabricTest, ExampleTest1) {
 TEST(CFabricTest, createPingObject) {
 
     ASSERT_NO_THROW(
-            Cfabric::MsgTypes::ping ball = Cfabric::MsgTypes::ping();
+            BigSystem::MySubsystems::MsgTypes::ping ball = BigSystem::MySubsystems::MsgTypes::ping();
             ) ;
     }
 
 TEST(CFabricTest, ManyPlayers) {
 
-    std::shared_ptr<Cfabric::Broker> broker = std::make_shared<Cfabric::Broker>();
-    Cfabric::MsgTypes::ping ball = Cfabric::MsgTypes::ping();
+    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
+    auto ball = BigSystem::MySubsystems::MsgTypes::ping();
 
     // make many subsystems:
     constexpr int num_subsystems = 10000;
@@ -47,8 +47,7 @@ TEST(CFabricTest, ManyPlayers) {
 
 TEST(CFabricTest, ManyResponses) {
 
-    std::shared_ptr<Cfabric::Broker> broker = std::make_shared<Cfabric::Broker>();
-    Cfabric::MsgTypes::ping ball = Cfabric::MsgTypes::ping();
+    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
 
     // make many subsystems:
     constexpr int num_subsystems = 2;

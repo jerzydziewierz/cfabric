@@ -1,5 +1,5 @@
 #include "cfabric.hpp"
-#include "cfabric_message_types.hpp"
+#include "demo_message_types.hpp"
 #include <spdlog/spdlog.h>
 
 namespace BigSystem {
@@ -7,14 +7,16 @@ namespace BigSystem {
     namespace MySubsystems
     {
         class PingPongResponder {
+            using BrokerT = Cfabric::Broker<MsgTypes::MessageVariants>;
+
         private:
             std::string name = "unnamed";
-            std::shared_ptr<Cfabric::Broker> broker = nullptr;
+            std::shared_ptr<BrokerT> broker = nullptr;
             int response_limit = 0;
         public:
 
             PingPongResponder(
-                    std::shared_ptr<Cfabric::Broker> broker,
+                    std::shared_ptr<BrokerT> broker,
                     std::string name = "unset",
                     int response_limit = 100
                     ) {
@@ -40,17 +42,17 @@ namespace BigSystem {
             }
 
             void play() {
-                auto msg = Cfabric::MsgTypes::ping();
+                auto msg = MsgTypes::ping();
                 broker->publish(msg);
                 }
 
-            void on_ping(const Cfabric::MsgTypes::ping& msg) {
+            void on_ping(const MsgTypes::ping& msg) {
                 response_limit--;
-                if (response_limit > 0) broker->publish(Cfabric::MsgTypes::ping());
+                if (response_limit > 0) broker->publish(MsgTypes::ping());
 
                 }
 
-            void on_string(const Cfabric::MsgTypes::string& msg) {
+            void on_string(const MsgTypes::string& msg) {
                 SPDLOG_INFO("{} Received string message from {} with value: {}", this->name, msg.source, msg.content);
                 work();
                 }
