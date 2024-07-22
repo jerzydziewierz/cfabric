@@ -48,17 +48,35 @@ namespace BigSystem {
                 std::string source;
                 std::string content;
 
-                string(std::string source = "unset", std::string content = "unset") : source(source),
-                                                                                      content(content) {}
+                string(
+                        std::string source = "unset",
+                        std::string content = "unset"
+                        ) :
+                        source(source),
+                        content(content)
+                        {}
 
                 //! if the message is not default-copyable, it must have an implemented explicit copy constructor!
                 //! this becomes critically important if your message contains a pointer to something, or other non-trivially copyable data
-                string(const string &other) : source(other.source), content(other.content) {}
+                string(const string &other) : source(other.source), content(other.content){}
             };
+
+            // message types can and should derive from simpler messages where applicable. Use that instead of repeating the same fields, or enums. This is a rust like good practice.
+
+            struct question: string {
+                question(std::string source = "unset", std::string content = "unset") : string(source, content) {}
+            };
+            struct answer: string {
+                answer(std::string source = "unset", std::string content = "unset") : string(source, content) {}
+            };
+            struct thanks: string {
+                thanks(std::string source = "unset", std::string content = "unset") : string(source, content) {}
+            };
+
 
             //! MessageVariants - must contain all the supported message types to enable the broker to handle them.
             //! When adding a new message type, add it here.
-            using MessageVariants = std::variant<ping, pingTTL, string>;
+            using MessageVariants = std::variant<ping, pingTTL, question, answer, thanks>;
 
         } // namespace MsgTypes
     } // namespace Cfabric

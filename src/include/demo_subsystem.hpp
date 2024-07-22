@@ -22,23 +22,66 @@ namespace BigSystem {
                     ) {
                 if (!broker) throw std::runtime_error("Broker cannot be null");
                 this->broker = broker;
+                this->name = name;
                 this->response_limit = response_limit;
 
-                // subscribe to ping messages
+                // subscribe to play related messages
                 broker->subscribe(
                         this,
                         &PingPongResponder::on_ping
                         );
 
-                // subscribe to string messages
+                // subscribe to work related messages
                 broker->subscribe(
                         this,
-                        &PingPongResponder::on_string
+                        &PingPongResponder::on_question
                         );
+                broker->subscribe(
+                        this,
+                        &PingPongResponder::on_answer
+                        );
+                broker->subscribe(
+                        this,
+                        &PingPongResponder::on_thanks
+                        );
+
             }
 
             void work() {
-                SPDLOG_INFO("{} is doing some work", this->name);
+                SPDLOG_INFO("{} is sending the question out", this->name);
+                // if I am "s1", I will send a message to "s2"
+                if (this->name == "s1") {
+                    auto msg = MsgTypes::question ("s1", "what is the answer to life, the universe, and everything?");
+                    broker->publish(msg);
+                    }
+            }
+
+            void on_question(const MsgTypes::question& msg)
+            {
+                if (this->name != "s1") {
+                    SPDLOG_INFO("{} Received question message from {} with value: {}", this->name, msg.source,
+                                msg.content);
+                    auto response = MsgTypes::answer(this->name, "42");
+                    broker->publish(response);
+                    }
+            }
+
+            void on_answer(const MsgTypes::answer& msg)
+            {
+                if (this->name == "s1") {
+                    SPDLOG_INFO("{} Received answer message from {} with value: {}", this->name, msg.source,
+                                msg.content);
+                    auto response = MsgTypes::thanks(this->name, "Understood, thanks!");
+                    broker->publish(response);
+                    }
+            }
+
+            void on_thanks(const MsgTypes::thanks& msg)
+            {
+                if (msg.source != this->name) {
+                    SPDLOG_INFO("{} Received thanks message from {} with value: {}", this->name, msg.source,
+                                msg.content);
+                    }
             }
 
             void play() {
@@ -48,14 +91,15 @@ namespace BigSystem {
 
             void on_ping(const MsgTypes::ping& msg) {
                 response_limit--;
-                if (response_limit > 0) broker->publish(MsgTypes::ping());
-
+                if (response_limit > 0)
+                {
+                    broker->publish(MsgTypes::ping());
                 }
-
-            void on_string(const MsgTypes::string& msg) {
-                SPDLOG_INFO("{} Received string message from {} with value: {}", this->name, msg.source, msg.content);
-                work();
+                else
+                {
+                    // this branch will be taken often, so it's important to quickly exit
                 }
+            }
         };
     } // namespace MySubsystems
 } // namespace BigSystem
