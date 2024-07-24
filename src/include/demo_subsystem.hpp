@@ -110,7 +110,7 @@ namespace BigSystem {
 
         public:
             PingPong2(std::shared_ptr<BrokerT> broker, std::string name, int ping_limit)
-                : name(std::move(name)), broker(std::move(broker)), ping_limit(ping_limit) {
+                : name(std::move(name)), broker(broker), ping_limit(ping_limit) {
                 this->broker->subscribe<MsgTypes::ping>(this, &PingPong2::on_ping);
             }
 
@@ -134,9 +134,10 @@ namespace BigSystem {
 
             void send_ping() {
                 if (!waiting_for_pong) {
+                    waiting_for_pong = true;
                     broker->publish(MsgTypes::ping());
                     pings_sent++;
-                    waiting_for_pong = true;
+
                 }
             }
 
