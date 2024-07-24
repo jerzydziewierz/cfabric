@@ -18,6 +18,12 @@ CFabric is a simple message pub-sub communication pattern framework for C++17. T
 
 CFabric provides a flexible and efficient way to implement a publish-subscribe pattern in C++. It allows different parts of your application to communicate without being tightly coupled.
 
+Key features of CFabric include:
+- Simple and lightweight
+- you define the data in the messages. CFabric does not impose any restrictions on the message types. You can also have an empty struct as a message type.
+- the handler for the message is resolved at compile time from the message type
+- the handler is a member function of a class that is subscribed to the message type
+
 ## Installation
 
 CFabric is primarily a header-only library. To use it in your project:
@@ -30,124 +36,10 @@ CFabric is primarily a header-only library. To use it in your project:
 
 ## Usage
 
-### Defining Message Types
-
-1. Define your message types in the `BigSystem::MySubsystems::MsgTypes` namespace.
-2. Add new types to the `MessageVariants` variant type.
-
-Example:
-
-```cpp
-namespace BigSystem::MySubsystems::MsgTypes {
-    struct ping {
-        std::string source;
-        ping(std::string src = "") : source(src) {}
-    };
-
-    struct pong {
-        std::string source;
-        pong(std::string src = "") : source(src) {}
-    };
-
-    using MessageVariants = std::variant<ping, pong, /* other message types */>;
-}
-```
-
-### Creating a Broker
-
-Create a broker instance with your defined message types:
-
-```cpp
-auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
-```
-
-### Subscribing to Messages
-
-Subscribe to messages using either a lambda or a member function:
-
-```cpp
-// Using a lambda
-broker->subscribe<BigSystem::MySubsystems::MsgTypes::ping>([](const auto& msg) {
-    // Handle the ping message
-});
-
-// Using a member function
-class MySubsystem {
-public:
-    void handlePing(const BigSystem::MySubsystems::MsgTypes::ping& msg) {
-        // Handle the ping message
-    }
-};
-
-MySubsystem myObject;
-broker->subscribe<BigSystem::MySubsystems::MsgTypes::ping>(&myObject, &MySubsystem::handlePing);
-```
-
-### Publishing Messages
-
-Publish messages using the broker:
-
-```cpp
-BigSystem::MySubsystems::MsgTypes::ping msg("source");
-broker->publish(msg);
-```
-
-### Creating Subsystems
-
-You can create subsystems that interact with the broker. For example, the `PingPongResponder` class:
-
-```cpp
-class PingPongResponder {
-public:
-    PingPongResponder(std::shared_ptr<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>> broker, std::string name, int max_responses = -1)
-        : broker_(broker), name_(name), max_responses_(max_responses) {
-        // Subscribe to messages and set up response logic
-    }
-
-    void work() {
-        // Implement work logic
-    }
-
-private:
-    std::shared_ptr<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>> broker_;
-    std::string name_;
-    int max_responses_;
-};
-```
-
-## Example
-
-Here's a simple example of how to use CFabric:
-
-```cpp
-#include "cfabric.hpp"
-#include "demo_message_types.hpp"
-#include "demo_subsystem.hpp"
-
-int main() {
-    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
-
-    BigSystem::MySubsystems::PingPongResponder s1(broker, "s1");
-    BigSystem::MySubsystems::PingPongResponder s2(broker, "s2");
-
-    BigSystem::MySubsystems::MsgTypes::ping initial_ping("main");
-    broker->publish(initial_ping);
-
-    s1.work();
-    s2.work();
-
-    return 0;
-}
-```
+see [/src/demo1](src/demo1.cpp) for a simple example of how to use CFabric.
 
 ## Best Practices
 
-1. Keep message types simple and preferably trivially copyable.
-2. Use meaningful names for message types and their fields.
-3. Consider using inheritance for related message types.
-4. Unsubscribe from messages when they're no longer needed to prevent memory leaks.
-5. Use shared pointers for the broker to ensure proper lifetime management.
-6. Design your subsystems to be modular and reusable.
-7. Use const references for message parameters in handler functions to avoid unnecessary copying.
+See [patterns.md](patterns.md) for more information on how to use CFabric in different design patterns.
 
 For more detailed information and advanced usage, please refer to the comments in the `cfabric.hpp` file and the provided test files.
