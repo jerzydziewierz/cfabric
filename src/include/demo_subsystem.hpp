@@ -116,7 +116,7 @@ namespace BigSystem {
 
         public:
             PingPongThreaded(std::shared_ptr<BrokerT> broker, std::string name, int max_pings)
-                : name(std::move(name)), broker(std::move(broker)), max_pings(max_pings) {
+                : name(std::move(name)), broker(broker), max_pings(max_pings) {
                 broker->subscribe<MsgTypes::ping>(this, &PingPongThreaded::on_ping);
                 thread = std::thread(&PingPongThreaded::run, this);
             }
@@ -130,11 +130,16 @@ namespace BigSystem {
             }
 
             void on_ping(const MsgTypes::ping& msg) {
-                std::unique_lock<std::mutex> lock(mutex);
+                // std::unique_lock<std::mutex> lock(mutex);
                 if (ping_count < max_pings) {
-                    SPDLOG_INFO("{} received ping {}", name, ping_count + 1);
+                    // SPDLOG_INFO("{} received ping {}", name, ping_count + 1);
                     message_received = true;
                     cv.notify_one();
+                }
+                else
+                {
+//                    SPDLOG_INFO("{} received final ping", name);
+//                    running = false;
                 }
             }
 
@@ -146,21 +151,22 @@ namespace BigSystem {
                     if (!running) break;
 
                     if (message_received) {
+                        message_received = false;
                         ping_count++;
                         if (ping_count < max_pings) {
-                            SPDLOG_INFO("{} sending ping {}", name, ping_count);
+                       //     SPDLOG_INFO("{} sending ping {}", name, ping_count);
                             broker->publish(MsgTypes::ping());
                         } else {
-                            SPDLOG_INFO("{} finished ping-pong process", name);
+                            // SPDLOG_INFO("{} finished ping-pong process", name);
+                            broker->publish(MsgTypes::ping());
+                            running = false;
                         }
-                        message_received = false;
                     }
                 }
-                running = false;
             }
 
             void start() {
-                SPDLOG_INFO("{} starting ping-pong", name);
+                // SPDLOG_INFO("{} starting ping-pong", name);
                 broker->publish(MsgTypes::ping());
             }
 
