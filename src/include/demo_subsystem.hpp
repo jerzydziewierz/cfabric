@@ -1,6 +1,9 @@
 #include "cfabric.hpp"
 #include "demo_message_types.hpp"
 #include <spdlog/spdlog.h>
+#include <thread>
+#include <atomic>
+#include <condition_variable>
 
 namespace BigSystem {
 
@@ -94,6 +97,61 @@ namespace BigSystem {
             void on_ping(const MsgTypes::ping& msg) {
                 // This method is now only used for receiving pings, not for sending them
                 // You can add any necessary handling here
+            }
+        };
+
+        class PingPongThreaded {
+            using BrokerT = Cfabric::Broker<MsgTypes::MessageVariants>;
+
+        private:
+            std::string name;
+            std::shared_ptr<BrokerT> broker;
+            std::thread thread;
+            std::atomic<bool> running{true};
+            std::atomic<bool> message_received{false};
+            std::condition_variable cv;
+            std::mutex mutex;
+
+        public:
+            PingPongThreaded(std::shared_ptr<BrokerT> broker, std::string name)
+                : name(std::move(name)), broker(std::move(broker)) {
+                broker->subscribe<MsgTypes::ping>(this, &PingPongThreaded::on_ping);
+                thread = std::thread(&PingPongThreaded::run, this);
+            }
+
+            ~PingPongThreaded() {
+                running = false;
+                cv.notify_one();
+                if (thread.joinable()) {
+                    thread.join();
+                }
+            }
+
+            void on_ping(const MsgTypes::ping& msg) {
+                SPDLOG_INFO("{} received ping", name);
+                std::unique_lock<std::mutex> lock(mutex);
+                message_received = true;
+                cv.notify_one();
+            }
+
+            void run() {
+                while (running) {
+                    std::unique_lock<std::mutex> lock(mutex);
+                    cv.wait(lock, [this] { return message_received || !running; });
+
+                    if (!running) break;
+
+                    if (message_received) {
+                        SPDLOG_INFO("{} sending ping", name);
+                        broker->publish(MsgTypes::ping());
+                        message_received = false;
+                    }
+                }
+            }
+
+            void start() {
+                SPDLOG_INFO("{} starting ping-pong", name);
+                broker->publish(MsgTypes::ping());
             }
         };
     } // namespace MySubsystems

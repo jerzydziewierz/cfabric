@@ -39,3 +39,27 @@ TEST(CFabricPerformanceTest, IncreasingResponses) {
         runPerformanceTest(count);
     }
 }
+
+TEST(CFabricPerformanceTest, ThreadedPingPong) {
+    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
+
+    auto c1 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C1");
+    auto c2 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C2");
+
+    const int num_pings = 1000;
+    auto start = std::chrono::high_resolution_clock::now();
+
+    c1->start();
+
+    // Wait for the ping-pong to complete
+    std::this_thread::sleep_for(std::chrono::milliseconds(num_pings * 2));
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = end - start;
+    double elapsed_seconds = elapsed.count();
+    double pings_per_second = num_pings / elapsed_seconds;
+
+    SPDLOG_INFO("Threaded Ping-Pong Performance: {:.1f} pings/sec", pings_per_second);
+
+    ASSERT_GT(pings_per_second, 100.0) << "Performance below threshold for threaded ping-pong";
+}
