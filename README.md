@@ -36,7 +36,9 @@ CFabric is primarily a header-only library. To use it in your project:
 
 ## Usage
 
-see [/src/demo1](src/demo1.cpp) for a simple example of how to use CFabric.
+See [/src/demo1](src/demo1.cpp) for a simple example of how to use CFabric.
+
+For a more advanced example of asynchronous data processing using CFabric, check out the `LargeDataProcessor` class in [/src/include/demo_subsystem_2.hpp](src/include/demo_subsystem_2.hpp).
 
 ## Best Practices
 
