@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <condition_variable>
+#include <queue>
 
 namespace BigSystem {
 
@@ -18,8 +19,8 @@ namespace BigSystem {
             std::thread thread;
             std::atomic<bool> running{true};
             std::condition_variable awaiter;
-            std::atomic<bool> haveNewData{false};
             std::mutex mutex;
+            std::queue<std::string> dataQueue;
 
         public:
             LargeDataProcessor(std::shared_ptr<BrokerT> broker, std::string name)
@@ -39,37 +40,37 @@ namespace BigSystem {
             void on_please_stop(const MsgTypes::pleaseStop& msg) {
                 running = false;
                 awaiter.notify_one();
-                }
+            }
 
             void on_message(const MsgTypes::string& msg) {
-                // note that this function is executed in the sender's thread, and the broker's code is only a proxy.
-                haveNewData = true; // notify the thread to send a response.
+                std::lock_guard<std::mutex> lock(mutex);
+                dataQueue.push(msg.content);
                 awaiter.notify_one();
-
-
-                // note that the contents of the message (const MsgTypes::ping& msg) are not guaranteed to be valid after this function returns, so if you need to keep the data, copy it! do not store pointer to the incoming message, that's asking for trouble.
-                // note that if the processing **here** is to take a long time, it may be prudent to copy the message/action command into a queue, and do the processing in a thread, to avoid stalling the callers.
-                // the caller's "publish" does not finish until this and all other handlers have finished!
-                }
+            }
 
             void run() {
                 while (running) {
                     std::unique_lock<std::mutex> lock(mutex);
-                    awaiter.wait(lock, [this] { return haveNewData || !running; });
+                    awaiter.wait(lock, [this] { return !dataQueue.empty() || !running; });
 
                     if (!running) break;
 
-                    if (haveNewData) {
-                        haveNewData = false;
-                        } else {
-                        // if no more data, finish thread.
-                        running = false;
-                        }
+                    while (!dataQueue.empty()) {
+                        std::string data = dataQueue.front();
+                        dataQueue.pop();
+                        lock.unlock();
+
+                        // Process the data here
+                        spdlog::info("Processing data: {}", data);
+
+                        lock.lock();
                     }
                 }
+            }
 
             void start() {
-                }
+                // This method is now empty as the thread starts in the constructor
+            }
 
             bool is_finished() const {
                 return !running;
