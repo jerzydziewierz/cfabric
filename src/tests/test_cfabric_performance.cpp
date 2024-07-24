@@ -39,38 +39,3 @@ TEST(CFabricPerformanceTest, IncreasingResponses) {
         runPerformanceTest(count);
     }
 }
-
-void runPingPongPerformanceTest(int num_pings) {
-    auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
-
-    auto ping = BigSystem::MySubsystems::PingPong2(broker, "ping", num_pings);
-    auto pong = BigSystem::MySubsystems::PingPong2(broker, "pong", num_pings);
-
-    auto start = std::chrono::high_resolution_clock::now();
-    ping.start();
-
-    while (ping.get_pongs_received() < num_pings) {
-        // Wait for all pings to be sent and received
-    }
-
-    auto end = std::chrono::high_resolution_clock::now();
-
-    std::chrono::duration<double> elapsed = end - start;
-    double elapsed_seconds = elapsed.count();
-    double round_trips_per_second = num_pings / elapsed_seconds;
-
-    SPDLOG_INFO("PingPong performance test with {} pings: {:.1f} round trips/sec ({:.1f} k/sec, {:.1f} M/sec)",
-                num_pings, round_trips_per_second, 1e-3*round_trips_per_second, 1e-6*round_trips_per_second);
-
-    // Add an assertion to check if the performance is above a certain threshold
-    ASSERT_GT(round_trips_per_second, 1000.0) << "Performance below threshold for " << num_pings << " pings";
-}
-
-TEST(CFabricPerformanceTest, PingPongTest) {
-    std::vector<int> ping_counts = {100, 1000, 10000, 100000};
-
-    for (int count : ping_counts) {
-        SPDLOG_INFO("Starting PingPong test with {} pings", count);
-        runPingPongPerformanceTest(count);
-    }
-}

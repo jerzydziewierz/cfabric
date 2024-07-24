@@ -96,58 +96,5 @@ namespace BigSystem {
                 // You can add any necessary handling here
             }
         };
-
-        class PingPong2 {
-            using BrokerT = Cfabric::Broker<MsgTypes::MessageVariants>;
-
-        private:
-            std::string name;
-            std::shared_ptr<BrokerT> broker;
-            std::atomic<int> pings_sent{0};
-            std::atomic<int> pongs_received{0};
-            int ping_limit;
-            std::atomic<bool> waiting_for_pong{false};
-
-        public:
-            PingPong2(std::shared_ptr<BrokerT> broker, std::string name, int ping_limit)
-                : name(std::move(name)), broker(broker), ping_limit(ping_limit) {
-                this->broker->subscribe<MsgTypes::ping>(this, &PingPong2::on_ping);
-            }
-
-            void start() {
-                if (name == "ping") {
-                    send_ping();
-                }
-            }
-
-            void on_ping(const MsgTypes::ping& msg) {
-                if (name == "pong") {
-                    broker->publish(MsgTypes::ping());
-                } else if (name == "ping") {
-                    pongs_received++;
-                    waiting_for_pong = false;
-                    if (pings_sent < ping_limit) {
-                        send_ping();
-                    }
-                }
-            }
-
-            void send_ping() {
-                if (!waiting_for_pong) {
-                    waiting_for_pong = true;
-                    broker->publish(MsgTypes::ping());
-                    pings_sent++;
-
-                }
-            }
-
-            int get_pings_sent() const {
-                return pings_sent;
-            }
-
-            int get_pongs_received() const {
-                return pongs_received;
-            }
-        };
     } // namespace MySubsystems
 } // namespace BigSystem
