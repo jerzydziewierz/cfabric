@@ -14,11 +14,10 @@ TEST(CFabricTest, ExampleTest1) {
 }
 
 TEST(CFabricTest, createPingObject) {
-
     ASSERT_NO_THROW(
-            BigSystem::MySubsystems::MsgTypes::ping ball = BigSystem::MySubsystems::MsgTypes::ping();
-            ) ;
-    }
+        BigSystem::MySubsystems::MsgTypes::ping ball = BigSystem::MySubsystems::MsgTypes::ping()
+    );
+}
 
 TEST(CFabricTest, ManyPlayers) {
 
