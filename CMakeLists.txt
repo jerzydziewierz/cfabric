@@ -22,6 +22,7 @@ target_link_libraries(demo1 PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 add_executable(tests
         src/tests/test_main.cpp
         src/tests/test_cfabric.cpp
+        src/tests/test_cfabric_performance.cpp
         src/include/cfabric.hpp
         )
 
