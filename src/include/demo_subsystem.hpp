@@ -85,20 +85,15 @@ namespace BigSystem {
             }
 
             void play() {
-                auto msg = MsgTypes::ping();
-                broker->publish(msg);
+                for (int i = 0; i < response_limit; ++i) {
+                    auto msg = MsgTypes::ping();
+                    broker->publish(msg);
                 }
+            }
 
             void on_ping(const MsgTypes::ping& msg) {
-                response_limit--;
-                if (response_limit > 0)
-                {
-                    broker->publish(MsgTypes::ping());
-                }
-                else
-                {
-                    // this branch will be taken often, so it's important to quickly exit
-                }
+                // This method is now only used for receiving pings, not for sending them
+                // You can add any necessary handling here
             }
         };
     } // namespace MySubsystems

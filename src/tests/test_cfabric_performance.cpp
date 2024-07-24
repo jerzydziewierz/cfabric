@@ -20,14 +20,14 @@ void runPerformanceTest(int num_responses) {
 
     std::chrono::duration<double> elapsed = end - start;
     double elapsed_seconds = elapsed.count();
-    double passes_per_second = 2.0 * num_responses / elapsed_seconds;
+    double messages_per_second = num_responses / elapsed_seconds;
 
-    SPDLOG_INFO("Performance test with {} responses: {:.1f} passes/sec ({:.1f} k/sec, {:.1f} M/sec)",
-                num_responses, passes_per_second, 1e-3*passes_per_second, 1e-6*passes_per_second);
+    SPDLOG_INFO("Performance test with {} responses: {:.1f} messages/sec ({:.1f} k/sec, {:.1f} M/sec)",
+                num_responses, messages_per_second, 1e-3*messages_per_second, 1e-6*messages_per_second);
 
     // Add an assertion to check if the performance is above a certain threshold
     // This threshold can be adjusted based on your performance requirements
-    ASSERT_GT(passes_per_second, 1000.0) << "Performance below threshold for " << num_responses << " responses";
+    ASSERT_GT(messages_per_second, 1000.0) << "Performance below threshold for " << num_responses << " messages";
 }
 
 // Outer function that runs tests with increasing counts of num_responses
