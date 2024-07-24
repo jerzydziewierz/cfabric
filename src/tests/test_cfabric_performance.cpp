@@ -43,16 +43,18 @@ TEST(CFabricPerformanceTest, IncreasingResponses) {
 TEST(CFabricPerformanceTest, ThreadedPingPong) {
     auto broker = std::make_shared<Cfabric::Broker<BigSystem::MySubsystems::MsgTypes::MessageVariants>>();
 
-    auto c1 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C1");
-    auto c2 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C2");
-
     const int num_pings = 1000;
+    auto c1 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C1", num_pings);
+    auto c2 = std::make_unique<BigSystem::MySubsystems::PingPongThreaded>(broker, "C2", num_pings);
+
     auto start = std::chrono::high_resolution_clock::now();
 
     c1->start();
 
-    // Wait for the ping-pong to complete
-    std::this_thread::sleep_for(std::chrono::milliseconds(num_pings * 2));
+    // Wait for both threads to finish
+    while (!c1->is_finished() || !c2->is_finished()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 
     auto end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> elapsed = end - start;
