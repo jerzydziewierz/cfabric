@@ -33,9 +33,7 @@ namespace BigSystem {
             ~LargeDataProcessor() {
                 running = false;
                 awaiter.notify_one();
-                if (thread.joinable()) {
-                    thread.join();
-                }
+                finalize();
             }
 
             void on_please_stop(const MsgTypes::pleaseStop& msg) {
@@ -69,6 +67,9 @@ namespace BigSystem {
 
                     // Thread synchronization: Wait for data or a stop signal
                     // This releases the lock while waiting, allowing other threads to push data
+                    // Is the lock released while waiting? Yes, the lock is released while waiting.
+                    // Is the lock re-acquired before this method returns? Yes, the lock is re-acquired before this method returns.
+                    // the lambda function is used to check the condition, and the wait function will unlock the mutex and wait until the condition is met.
                     awaiter.wait(lock, [this] { return !dataQueue.empty() || !running; });
 
                     // Check if we should exit the loop
@@ -76,7 +77,7 @@ namespace BigSystem {
 
                     while (!dataQueue.empty()) {
                         // Memory safety: Create a copy of the data from the queue
-                        // This ensures we have our own copy to work with after unlocking
+                        // This ensures we have our own copy to work with after unlocking, even if there are multiple workers trying to get items from this queue.
                         std::string data = dataQueue.front();
                         dataQueue.pop();
 
@@ -99,7 +100,10 @@ namespace BigSystem {
                 }
             }
 
+            //! this will stop the processing thread.
             void finalize() {
+                if (running) throw std::runtime_error("Cannot finalize while running");
+
                 if (thread.joinable()) {
                     thread.join();
                 }
@@ -107,6 +111,7 @@ namespace BigSystem {
 
             void start() {
                 // This method is now empty as the thread starts in the constructor
+                // but could be used to unload the constructor or have staged boot-up
             }
 
             bool is_finished() const {
