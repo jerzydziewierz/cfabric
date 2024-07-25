@@ -19,17 +19,32 @@ CFabric is a simple message pub-sub communication pattern framework for C++17. T
 CFabric provides a flexible and efficient way to implement a publish-subscribe pattern in C++. It allows different parts of your application to communicate without being tightly coupled.
 
 Key features of CFabric include:
-- Simple and lightweight
+- broker based pub-sub communication pattern
+- in-memory only operation, no network
+    - if you need your messages to go over network or to a different process, you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp)
 - you define the data in the messages. CFabric does not impose any restrictions on the message types. You can also have an empty struct as a message type.
 - the handler for the message is resolved at compile time from the message type
-- the handler is a member function of a class that is subscribed to the message type
+
+## What CFabric doesn't do natively
+
+- Asynchronous operation. By default all interactions are eager and synchronous for simplicity - "deep-first".
+    - You can extend the operation to be asynchronous as per example in `src/demo2.cpp`
+- Test for message loops. If the message handler causes the sender to create a message that will cause an infinite loop, or even a chain that is too long, then the program will segfault on stack overflow.
+   - You can prevent that by adding "Time To Live" (TTL) field in the source message, and use that to limit recursion.
 
 ## Installation
 
-CFabric is primarily a header-only library. To use it in your project:
+CFabric is a header-only library. To use it in your project:
 
 1. Include the `cfabric.hpp` file in your source code.
-2. If you're using the provided CMake setup:
+2. Create your message types struct, and a special variadic type that contains all the message types for given broker
+3. Instantiate the broker under std::shared_ptr<> pointer
+4. Pass that pointer to all the clients that will listen to messages
+5. the clients subscribe to message types
+6. run the program, and profit!
+
+
+If you're using the provided CMake setup:
    - Add the CFabric directory to your project
    - In your CMakeLists.txt, add `add_subdirectory(path/to/cfabric)`
    - Link your target with CFabric: `target_link_libraries(your_target PRIVATE CFabric)`
