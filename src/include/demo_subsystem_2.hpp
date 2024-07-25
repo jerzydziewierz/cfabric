@@ -26,6 +26,7 @@ namespace BigSystem {
             LargeDataProcessor(std::shared_ptr<BrokerT> broker, std::string name)
                 : name(std::move(name)), broker(broker){
                 broker->subscribe<MsgTypes::string>(this, &LargeDataProcessor::on_message);
+                broker->subscribe<MsgTypes::pleaseStop>(this, &LargeDataProcessor::on_please_stop);
                 thread = std::thread(&LargeDataProcessor::run, this);
             }
 
@@ -62,9 +63,17 @@ namespace BigSystem {
 
                         // Process the data here
                         spdlog::info("Processing data: {}", data);
-
+                        // simulate that it takes 1 second to process this data:
+                        std::this_thread::sleep_for(std::chrono::seconds(1));
+                        spdlog::info("done.");
                         lock.lock();
                     }
+                }
+            }
+
+            void finalize() {
+                if (thread.joinable()) {
+                    thread.join();
                 }
             }
 

@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <gtest/gtest-assertion-result.h>
 #include "cfabric.hpp"
-#include "demo_subsystem.hpp"
+#include "demo_subsystem_1.hpp"
 
 
 TEST(CFabricTest, ExampleTest1) {

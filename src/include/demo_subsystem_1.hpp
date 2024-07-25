@@ -108,7 +108,7 @@ namespace BigSystem {
             std::shared_ptr<BrokerT> broker;
             std::thread thread;
             std::atomic<bool> running{true};
-            std::atomic<bool> message_received{false};
+            std::atomic<bool> ping_received{false};
             std::condition_variable cv;
             std::mutex mutex;
             int ping_count{0};
@@ -130,28 +130,27 @@ namespace BigSystem {
             }
 
             void on_ping(const MsgTypes::ping& msg) {
-                // std::unique_lock<std::mutex> lock(mutex);
+                // note that this function is executed in the sender's thread, and the broker's code is only a proxy.
                 if (ping_count < max_pings) {
                     // SPDLOG_INFO("{} received ping {}", name, ping_count + 1);
-                    message_received = true;
+                    ping_received = true; // notify the thread to send a response.
+                    // Setting a bool is sufficiently thread safe; however, if more complex data is to be shared, a thread-safe data copy should be used.
+                    // note that the contents of the message (const MsgTypes::ping& msg) are not guaranteed to be valid after this function returns, so if you need to keep the data, copy it! do not store pointer to the incoming message, that's asking for trouble.
+                    // note that if the processing **here** is to take a long time, it may be prudent to copy the message/action command into a queue, and do the processing in a thread, to avoid stalling the callers.
+                    // the caller's "publish" does not finish until this and all other handlers have finished!
                     cv.notify_one();
-                }
-                else
-                {
-//                    SPDLOG_INFO("{} received final ping", name);
-//                    running = false;
                 }
             }
 
             void run() {
                 while (running && ping_count < max_pings) {
                     std::unique_lock<std::mutex> lock(mutex);
-                    cv.wait(lock, [this] { return message_received || !running; });
+                    cv.wait(lock, [this] { return ping_received || !running; });
 
                     if (!running) break;
 
-                    if (message_received) {
-                        message_received = false;
+                    if (ping_received) {
+                        ping_received = false;
                         ping_count++;
                         if (ping_count < max_pings) {
                        //     SPDLOG_INFO("{} sending ping {}", name, ping_count);

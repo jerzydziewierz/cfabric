@@ -107,11 +107,8 @@ namespace Cfabric {
             using ConcreteType = std::decay_t<decltype(concrete_msg)>;
             auto it = handlers.find(std::type_index(typeid(ConcreteType)));
             if (it != handlers.end()) {
-                // make a copy of the message so that it definetely exists when the handlers are called, even if they are threaded
-                // this is a simple way to ensure that the message is not deleted before all handlers have been called
-                auto copied_msg = concrete_msg;
                 for (const auto& handler : it->second) {
-                    handler(MessageVariantsT(copied_msg));
+                    handler(MessageVariantsT(concrete_msg));
                 }
                 } else {
                 // Having no handlers is OK. This means that no one is listening.

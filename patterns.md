@@ -90,58 +90,21 @@ private:
 };
 ```
 
+## 4. Asynchronous Processing Pattern
+
+Note that the above examples use synchronous processing : the handler functions are called immediately when a message is published, and the handlers execute in the publisher's thread.
+This is not always desirable, especially if the handler functions are time-consuming or block the main thread.
+
+CFabric can be used to implement asynchronous processing patterns, where tasks are processed in the background while the main thread continues execution.
+see [src/demo2.cpp](src/demo2.cpp) for an example.
+
+
+
 ## Best Practices
 
 1. Keep message types simple and preferably trivially copyable.
 2. Use const references for message parameters in handler functions.
-3. Unsubscribe handlers when they are no longer needed.
-4. Use shared pointers for the broker to ensure proper lifetime management.
-5. Design your subsystems to be modular and reusable.
-6. Consider thread safety when designing your message handlers.
+3. Consider thread safety when designing your message handlers.
+4. If the handler functions are time-consuming, consider using asynchronous processing; see [src/demo2.cpp](src/demo2.cpp) for an example. 
 
 By following these patterns and best practices, you can create flexible, maintainable, and efficient systems using CFabric.
-
-## 4. Asynchronous Processing Pattern
-
-CFabric can be used to implement asynchronous processing patterns, where tasks are processed in the background while the main thread continues execution.
-
-### Example:
-
-```cpp
-class AsyncProcessor {
-public:
-    AsyncProcessor(std::shared_ptr<Cfabric::Broker<MessageVariants>> b) : broker(b) {
-        broker->subscribe<TaskMessage>(this, &AsyncProcessor::processTask);
-        broker->subscribe<StopMessage>(this, &AsyncProcessor::stop);
-        processingThread = std::thread(&AsyncProcessor::run, this);
-    }
-
-    ~AsyncProcessor() {
-        if (processingThread.joinable()) {
-            processingThread.join();
-        }
-    }
-
-private:
-    void processTask(const TaskMessage& task) {
-        // Process the task asynchronously
-    }
-
-    void stop(const StopMessage& msg) {
-        running = false;
-    }
-
-    void run() {
-        while (running) {
-            // Process messages from the broker
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-    }
-
-    std::shared_ptr<Cfabric::Broker<MessageVariants>> broker;
-    std::thread processingThread;
-    std::atomic<bool> running{true};
-};
-```
-
-This pattern allows for efficient handling of time-consuming tasks without blocking the main execution thread. It's particularly useful for scenarios where you need to process large amounts of data or perform long-running operations while keeping your application responsive.

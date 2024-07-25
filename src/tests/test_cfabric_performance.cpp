@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "cfabric.hpp"
-#include "demo_subsystem.hpp"
+#include "demo_subsystem_1.hpp"
 #include <chrono>
 #include <vector>
 #include <spdlog/spdlog.h>

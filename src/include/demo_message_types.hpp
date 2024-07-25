@@ -17,6 +17,9 @@ namespace BigSystem {
                 ping(const ping &other) = default;
             };
 
+            //! signal to stop the threads.
+            struct pleaseStop{};
+
             struct pingTTL {
             private:
 
@@ -76,7 +79,7 @@ namespace BigSystem {
 
             //! MessageVariants - must contain all the supported message types to enable the broker to handle them.
             //! When adding a new message type, add it here.
-            using MessageVariants = std::variant<ping, pingTTL, question, answer, thanks>;
+            using MessageVariants = std::variant<ping, pingTTL, question, answer, thanks, string, pleaseStop>;
 
         } // namespace MsgTypes
     } // namespace Cfabric
