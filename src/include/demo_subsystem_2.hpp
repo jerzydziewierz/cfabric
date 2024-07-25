@@ -63,14 +63,25 @@ namespace BigSystem {
 
             void run() {
                 while (running) {
+                    // Thread safety: Use a unique_lock for more flexible locking
+                    // This allows us to unlock and re-lock the mutex within the loop
                     std::unique_lock<std::mutex> lock(mutex);
+
+                    // Thread synchronization: Wait for data or a stop signal
+                    // This releases the lock while waiting, allowing other threads to push data
                     awaiter.wait(lock, [this] { return !dataQueue.empty() || !running; });
 
+                    // Check if we should exit the loop
                     if (!running) break;
 
                     while (!dataQueue.empty()) {
+                        // Memory safety: Create a copy of the data from the queue
+                        // This ensures we have our own copy to work with after unlocking
                         std::string data = dataQueue.front();
                         dataQueue.pop();
+
+                        // Thread safety: Unlock the mutex while processing data
+                        // This allows other threads to push new data while we're processing
                         lock.unlock();
 
                         // Process the data here
@@ -78,7 +89,12 @@ namespace BigSystem {
                         // simulate that it takes 1 second to process this data:
                         std::this_thread::sleep_for(std::chrono::seconds(1));
                         spdlog::info("done.");
+
+                        // Thread safety: Re-lock the mutex before checking the loop condition
                         lock.lock();
+
+                        // Note: The unique_lock will automatically unlock when it goes out of scope
+                        // This ensures the mutex is always unlocked, even if an exception is thrown
                     }
                 }
             }
