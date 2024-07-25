@@ -44,15 +44,16 @@ namespace BigSystem {
             }
 
             void on_message(const MsgTypes::string& msg) {
-                // Thread safety: This method is called by the broker thread(s)
-                // We use a lock_guard to ensure thread-safe access to the shared dataQueue
+                // Thread safety: This method is called by the sender's thread(s) and only forwarded here by the broker
+                // We use a lock_guard to ensure thread-safe access to the local dataQueue -- which could be used by the local thread
                 std::lock_guard<std::mutex> lock(mutex);
 
                 // Memory safety: We're storing a copy of msg.content, not a reference
-                // This ensures that we don't have dangling references if the original message is destroyed
+                // This ensures that we don't have dangling references when the original message is destroyed
+                // This is important because the sender's thread(s) may destroy the message right after this method returns
                 dataQueue.push(msg.content);
 
-                // Thread synchronization: Notify the processing thread that new data is available
+                // Thread synchronization: Notify the local processing thread that new data is available
                 // This is safe to call while holding the lock, as notify_one() doesn't block
                 awaiter.notify_one();
 
