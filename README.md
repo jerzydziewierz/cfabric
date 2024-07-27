@@ -1,3 +1,5 @@
+![CI](https://github.com/jerzydziewierz/cfabric/actions/workflows/ci.yml/badge.svg)
+
 # CFabric User Guide
 
 CFabric is a simple message pub-sub communication pattern framework for C++17. This guide will help you understand how to use CFabric in your projects.
