@@ -18,6 +18,8 @@ CFabric is a simple message pub-sub communication pattern framework for C++17. T
 
 ## Advantages of the pub-sub communication pattern
 
+The pub-sub pattern is an ultimate expression of the "prefer composition over inheritance" adage.
+
 As compared to traditional function calling, event-driven programming, callback driven, worker pool driven, or other communication patterns, the pub-sub pattern has several advantages:
 
 * Loose coupling between components, and very clear separation of concerns
