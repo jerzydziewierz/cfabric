@@ -49,7 +49,7 @@ Key features of CFabric include:
 - Simple and easy to extend or customize with e.g. message filtering, asynchronous operation, work queues, etc.
 - Useful error messages for common problems
 - No restrictions on the message data types. You can also have an empty struct as a message type, which is useful for signaling notifications.
-- We Can have multiple brokers in the same program, each with its own set of message types, to further separate concerns
+- One can have multiple brokers in the same program, each with its own set of message types, to further separate concerns and subsystems
 
 ## What CFabric doesn't do natively
 
