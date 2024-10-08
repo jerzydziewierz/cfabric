@@ -19,9 +19,15 @@ echo "Configuring with CMake..."
 # Configure the project with CMake
 cmake ..
 
+# Check if Makefile exists
+if [ ! -f "Makefile" ]; then
+    echo "Error: Makefile not generated. CMake configuration might have failed."
+    exit 1
+fi
+
 echo "Building the project..."
-# Build the project
-make
+# Build the project using cmake --build
+cmake --build .
 
 echo "Running demo3..."
 # Run demo3
