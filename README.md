@@ -89,11 +89,15 @@ This demo showcases:
 1. A `Logger` module that subscribes to and logs various message types.
 2. A `DataProcessor` module that processes incoming messages and publishes processed results.
 3. A `UserInterface` module that simulates user input and displays messages.
+4. A way to document your system by:
+   * Creating a sequence diagram of the message flow in the system as per [demo3_sequence_diagram.md](demo3_sequence_diagram.md)
+   * Drawing the modules-and-messages diagram, as per [demo3_module_message_diagram.dot](demo3_module_message_diagram.dot)
 
 This example demonstrates how to:
 - Define interfaces between modules in terms of messages that they can exchange
 - Create multiple modules that communicate through a shared message broker
 - Simulate application flow in both "user-interactive" and "batch processing" mode.
+- Future proof the system by creating nice visual documentation, readable by stakeholders and future developers
 
 To run this demo, use the provided `run_demo3.sh` script:
 

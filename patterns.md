@@ -92,7 +92,7 @@ private:
 
 ## 4. Asynchronous Processing Pattern
 
-Note that the above examples use synchronous processing : the handler functions are called immediately when a message is published, and the handlers execute in the publisher's thread.
+Note that the above examples use synchronous processing: the handler functions are called immediately when a message is published, and the handlers execute in the publisher's thread.
 This is not always desirable, especially if the handler functions are time-consuming or block the main thread.
 
 CFabric can be used to implement asynchronous processing patterns, where tasks are processed in the background while the main thread continues execution.
@@ -103,7 +103,7 @@ see [src/demo2.cpp](src/demo2.cpp) for an example.
 ## Best Practices
 
 1. Keep message types simple and preferably trivially copyable.
-2. Use const references for message parameters in handler functions.
+2. Use const references for message parameters in handler functions. The message itself, once constructed, needs never to be changed.
 3. Consider thread safety when designing your message handlers.
 4. If the handler functions are time-consuming, consider using asynchronous processing; see [src/demo2.cpp](src/demo2.cpp) for an example. 
 
