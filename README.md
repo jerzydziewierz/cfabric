@@ -18,6 +18,8 @@ CFabric is a simple message pub-sub communication pattern framework for C++17. T
 
 ## Advantages of the pub-sub communication pattern
 
+The pub-sub pattern is an ultimate expression of the "prefer composition over inheritance" adage.
+
 As compared to traditional function calling, event-driven programming, callback driven, worker pool driven, or other communication patterns, the pub-sub pattern has several advantages:
 
 * Loose coupling between components, and very clear separation of concerns
@@ -27,11 +29,11 @@ As compared to traditional function calling, event-driven programming, callback 
 * Testability: 
     * It's easy to test individual components in isolation. 
     * The message types are very clearly defined, so you can easily write unit tests for each message type.
-    * it's easy to write integration tests for the whole system by sending messages to the broker and checking the results.
+    * It's easy to write integration tests for the whole system by sending messages to the broker and checking the results.
 * Maintainability:  
-    * It's easy to draw a diagram of the message flow in your system. 
-    * It's easy to intercept and log messages for debugging purposes.
-    * When something needs to change, it's easy to see what parts of the system will be affected, and isolate the changes to those parts.
+    * It's easy to draw a diagram of the message flow in your system. No more hidden connections or dependencies.
+    * It's easy to intercept, filter and log messages for debugging or system behaviour audit
+    * When something needs to change, it's easy to see what parts of the system will be affected, and isolate the changes to those parts only. 
 
 ## Introduction
 
@@ -40,14 +42,14 @@ CFabric provides a flexible and efficient way to implement a publish-subscribe p
 Key features of CFabric include:
 - Broker-based pub-sub communication pattern
 - In-memory-only operation, no network
-    - if you need your messages to go over network or to a different process, you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp)
+    - If you need your messages to go to a different process (beyond a befriended thread), you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp)
 - The handler for the message is resolved at compile time from the message type 
-- focus on memory safe operation, with no memory leaks or undefined behaviour
+- Focus on memory safe operation, with no memory leaks or undefined behaviour
 - No external dependencies, simple to integrate
 - Simple and easy to extend or customize with e.g. message filtering, asynchronous operation, work queues, etc.
 - Useful error messages for common problems
 - No restrictions on the message data types. You can also have an empty struct as a message type, which is useful for signaling notifications.
-- We Can have multiple brokers in the same program, each with its own set of message types, to further separate concerns
+- One can have multiple brokers in the same program, each with its own set of message types, to further separate concerns and subsystems
 
 ## What CFabric doesn't do natively
 
@@ -65,8 +67,8 @@ CFabric is a header-only library. To use it in your project:
 2. Create your message types struct, and a special variadic type that contains all the message types for given broker
 3. Instantiate the broker under std::shared_ptr<> pointer
 4. Pass that pointer to all the clients that will listen to messages
-5. the clients subscribe to message types
-6. run the program, and profit!
+5. The clients subscribe to message types
+6. Run the program, and profit!
 
 
 If you're using the provided CMake setup:
