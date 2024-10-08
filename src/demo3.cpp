@@ -1,4 +1,5 @@
 #include "include/cfabric.hpp"
+#include <iostream>
 #include <spdlog/spdlog.h>
 #include <string>
 #include <memory>
