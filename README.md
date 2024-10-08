@@ -18,7 +18,7 @@ CFabric is a simple message pub-sub communication pattern framework for C++17. T
 
 ## Advantages of the pub-sub communication pattern
 
-The pub-sub pattern is an ultimate expression of the "prefer composition over inheritance" adage.
+The publish-subscribe pattern is an ultimate expression of the "prefer composition over inheritance" adage.
 
 As compared to traditional function calling, event-driven programming, callback driven, worker pool driven, or other communication patterns, the pub-sub pattern has several advantages:
 
@@ -80,21 +80,20 @@ If you're using the provided CMake setup:
 
 See [/src/demo1](src/demo1.cpp) for a simple example of how to use CFabric.
 
-For a more advanced example of asynchronous data processing using CFabric, check out the `LargeDataProcessor` class in [/src/include/demo_subsystem_2.hpp](src/include/demo_subsystem_2.hpp).
+See [/src/demo2](src/demo2.cpp) For an example of asynchronous data processing using CFabric.
 
-### Demo 3: Message-Driven Architecture Example
+Finally, [/src/demo3.cpp](src/demo3.cpp) provides an example of a full scale message-driven architecture using CFabric. 
 
-[/src/demo3.cpp](src/demo3.cpp) provides an example of a message-driven architecture using CFabric. This demo showcases:
+This demo showcases:
 
 1. A `Logger` module that subscribes to and logs various message types.
 2. A `DataProcessor` module that processes incoming messages and publishes processed results.
 3. A `UserInterface` module that simulates user input and displays messages.
 
 This example demonstrates how to:
-- Define custom message types
+- Define interfaces between modules in terms of messages that they can exchange
 - Create multiple modules that communicate through a shared message broker
-- Use spdlog for logging instead of standard cout
-- Simulate a simple application flow with message passing between modules
+- Simulate application flow in both "user-interactive" and "batch processing" mode.
 
 To run this demo, use the provided `run_demo3.sh` script:
 
