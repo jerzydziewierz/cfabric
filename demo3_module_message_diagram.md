@@ -2,29 +2,41 @@
 
 This diagram illustrates the interaction between message types and modules in the Demo 3 application.
 
-```mermaid
-graph LR
-    subgraph Input Messages
-        SM[SourceMessage]
-        LOM[LogOnlyMessage]
-        SS[StopSignal]
-    end
-
-    subgraph Modules
-        L[Logger]
-        DP[DataProcessor]
-        UI[UserInterface]
-    end
-
-    subgraph Output Messages
-        PM[ProcessedMessage]
-    end
-
-    SM --> L & DP & UI
-    LOM --> L
-    SS --> L & DP & UI
-    DP --> PM
-    PM --> L & UI
+```dot
+digraph Demo3Diagram {
+    rankdir=LR;
+    node [shape=box];
+    
+    subgraph cluster_input {
+        label="Input Messages";
+        rank=same;
+        SM [label="SourceMessage"];
+        LOM [label="LogOnlyMessage"];
+        SS [label="StopSignal"];
+    }
+    
+    subgraph cluster_modules {
+        label="Modules";
+        rank=same;
+        L [label="Logger"];
+        DP [label="DataProcessor"];
+        UI [label="UserInterface"];
+    }
+    
+    subgraph cluster_output {
+        label="Output Messages";
+        rank=same;
+        PM [label="ProcessedMessage"];
+    }
+    
+    SM -> {L, DP, UI};
+    LOM -> L;
+    SS -> {L, DP, UI};
+    DP -> PM;
+    PM -> {L, UI};
+    
+    {rank=same; cluster_input; cluster_modules; cluster_output}
+}
 ```
 
 This diagram shows:
@@ -34,3 +46,5 @@ This diagram shows:
 - Lines indicating which modules interact with which message types
 
 Note: The actual interactions may be more complex; this diagram provides a high-level overview.
+
+To view this diagram, you'll need to use a Graphviz-compatible viewer or convert it to an image using Graphviz tools.
