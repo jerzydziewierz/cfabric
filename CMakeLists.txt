@@ -30,7 +30,7 @@ add_executable(demo3
         src/include/cfabric.hpp
         )
 
-target_link_libraries(demo3 PRIVATE $<$<BOOL:${MINGW}>:ws2_32>)
+target_link_libraries(demo3 PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
 
 # Add test executable
 add_executable(tests

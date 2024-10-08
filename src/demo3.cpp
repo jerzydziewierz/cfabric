@@ -1,5 +1,5 @@
 #include "include/cfabric.hpp"
-#include <iostream>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <memory>
 
@@ -24,7 +24,7 @@ public:
 
 private:
     void logMessage(const Messages::SimpleMessage& msg) {
-        std::cout << "Logger: Received message: " << msg.content << std::endl;
+        spdlog::info("Logger: Received message: {}", msg.content);
     }
 };
 
@@ -55,14 +55,14 @@ public:
 
     void getUserInput() {
         std::string input;
-        std::cout << "Enter a message: ";
+        spdlog::info("Enter a message: ");
         std::getline(std::cin, input);
         m_broker->publish(Messages::SimpleMessage(input));
     }
 
 private:
     void displayMessage(const Messages::SimpleMessage& msg) {
-        std::cout << "UI: Displaying message: " << msg.content << std::endl;
+        spdlog::info("UI: Displaying message: {}", msg.content);
     }
 
     std::shared_ptr<Cfabric::Broker<Messages::MessageVariants>> m_broker;
