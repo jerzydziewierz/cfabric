@@ -2,11 +2,12 @@
 
 ```mermaid
 sequenceDiagram
-    participant M as Main
-    participant UI as UserInterface
-    participant B as Broker
-    participant DP as DataProcessor
     participant L as Logger
+    participant B as Broker
+    participant UI as UserInterface
+    participant DP as DataProcessor
+    participant M as Main
+    
 
     Note over M,L: Application Start
     M->>B: create Broker
