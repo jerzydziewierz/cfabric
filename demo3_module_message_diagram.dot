@@ -1,0 +1,46 @@
+digraph Demo3Diagram {
+    rankdir=LR;
+    node [shape=box];
+    
+    subgraph cluster_input {
+        node [shape=box];
+        label="Sources";
+        rank=same;
+        SM [label="SourceMessage"];
+        SP [label="ProcessedMessage"];
+        SS [label="StopSignal"];
+    }
+    
+    subgraph cluster_modules {
+        node [shape=egg];
+        label="Modules";
+        rank=same;
+        DP [label="DataProcessor"];
+        UI [label="UserInterface"];
+        L [label="Logger"];
+        MAM [label="Main()"];
+    }
+    
+    subgraph cluster_output {
+        label="Results";
+        rank=same;
+        node [shape=box];
+        RSM [label="SourceMessage"];
+        PM [label="ProcessedMessage"];
+        RStop [label="StopSignal"];
+    }
+
+    // source to modules
+    SM -> {DP};
+    SP -> {UI};
+
+    // module to results
+
+    SS -> {UI;  DP};
+    UI -> {RSM};
+    DP -> {PM};
+    MAM -> {RStop};
+    MAM -> {RSM};
+    
+    {rank=same; }
+}
