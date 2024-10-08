@@ -3,7 +3,7 @@ digraph Demo3Diagram {
     node [shape=box];
     
     subgraph cluster_input {
-        node [shape=box];
+        node [shape=larrow];
         label="Sources";
         rank=same;
         SM [label="SourceMessage"];
@@ -24,7 +24,7 @@ digraph Demo3Diagram {
     subgraph cluster_output {
         label="Results";
         rank=same;
-        node [shape=box];
+        node [shape=rarrow];
         RSM [label="SourceMessage"];
         PM [label="ProcessedMessage"];
         RStop [label="StopSignal"];
