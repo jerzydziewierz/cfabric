@@ -1,7 +1,11 @@
 #!/bin/bash
 
+# try to delete the old build directory
+rm -rf build || true
+
 # Exit immediately if a command exits with a non-zero status.
 set -e
+
 
 # Navigate to the project root directory
 # The script assumes it's in the project root

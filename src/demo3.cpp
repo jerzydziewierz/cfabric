@@ -6,38 +6,74 @@
 
 // Message definitions
 namespace Messages {
-    struct SimpleMessage {
+
+    struct StopSignal{};
+
+    struct SourceMessage {
         std::string content;
-        SimpleMessage(std::string c) : content(std::move(c)) {}
+        SourceMessage(std::string c) : content(std::move(c)) {}
     };
 
-    using MessageVariants = std::variant<SimpleMessage>;
+    struct LogOnlyMessage {
+        std::string content;
+        LogOnlyMessage(std::string c) : content(std::move(c)) {}
+    };
+
+    struct ProcessedMessage {
+        std::string content;
+        ProcessedMessage(std::string c) : content(std::move(c)) {}
+    };
+
+    using MessageVariants = std::variant<
+            SourceMessage,
+            LogOnlyMessage,
+            ProcessedMessage,
+            StopSignal
+            >;
 }
 
 // Logger module
 class Logger {
 public:
     explicit Logger(std::shared_ptr<Cfabric::Broker<Messages::MessageVariants>> broker) {
-        broker->subscribe<Messages::SimpleMessage>([this](const Messages::SimpleMessage& msg) {
-            logMessage(msg);
+        broker->subscribe<Messages::SourceMessage>([this](const Messages::SourceMessage& msg) {
+            spdlog::info("Logger: tracing SourceMessage {}", msg.content);
+            });
+        broker->subscribe<Messages::LogOnlyMessage>([this](const Messages::LogOnlyMessage& msg) {
+            spdlog::info("Logger: tracing LogOnlyMessage: {}", msg.content);
+        });
+        broker->subscribe<Messages::ProcessedMessage>([this](const Messages::ProcessedMessage& msg) {
+            spdlog::info("Logger: tracing ProcessedMessage {}", msg.content);
+        });
+        broker->subscribe<Messages::StopSignal>([this](const Messages::StopSignal& msg) {
+            spdlog::info("Logger: Received stop signal");
         });
     }
 
 private:
-    void logMessage(const Messages::SimpleMessage& msg) {
-        spdlog::info("Logger: Received message: {}", msg.content);
-    }
+    // Logger does not need to do anything with the messages
 };
+
 
 // DataProcessor module
 class DataProcessor {
 public:
     explicit DataProcessor(std::shared_ptr<Cfabric::Broker<Messages::MessageVariants>> broker) 
-        : m_broker(broker) {}
+        : m_broker(broker) {
+        broker->subscribe<Messages::SourceMessage>([this](const Messages::SourceMessage &msg) {
+            processAndPublish(msg.content);
+        });
+
+        broker->subscribe<Messages::StopSignal>([this](const Messages::StopSignal &msg) {
+            spdlog::info("DataProcessor: Received stop signal");
+        });
+    }
 
     void processAndPublish(const std::string& data) {
+        spdlog::info("DataProcessor: Processing data: {}", data);
         std::string processed_data = "Processed: " + data;
-        m_broker->publish(Messages::SimpleMessage(processed_data));
+        spdlog::info("DataProcessor: Publishing processed data: {}", processed_data);
+        m_broker->publish(Messages::ProcessedMessage(processed_data));
     }
 
 private:
@@ -49,20 +85,25 @@ class UserInterface {
 public:
     explicit UserInterface(std::shared_ptr<Cfabric::Broker<Messages::MessageVariants>> broker) 
         : m_broker(broker) {
-        broker->subscribe<Messages::SimpleMessage>([this](const Messages::SimpleMessage& msg) {
+        broker->subscribe<Messages::StopSignal>([this](const Messages::StopSignal &msg) {
+            spdlog::info("UserInterface: Received stop signal");
+        });
+        broker->subscribe<Messages::SourceMessage>([this](const Messages::SourceMessage &msg) {
             displayMessage(msg);
+        });
+        broker->subscribe<Messages::ProcessedMessage>([this](const Messages::ProcessedMessage &msg) {
+            spdlog::info("UserInterface: Received processed message: {}", msg.content);
         });
     }
 
     void getUserInput() {
-        std::string input;
-        spdlog::info("Enter a message: ");
-        std::getline(std::cin, input);
-        m_broker->publish(Messages::SimpleMessage(input));
+        std::string input = "Simulated user input";
+        spdlog::info("Simulating user entering the message : {}", input);
+        m_broker->publish(Messages::SourceMessage(input));
     }
 
 private:
-    void displayMessage(const Messages::SimpleMessage& msg) {
+    void displayMessage(const Messages::SourceMessage& msg) {
         spdlog::info("UI: Displaying message: {}", msg.content);
     }
 
@@ -70,6 +111,7 @@ private:
 };
 
 int main() {
+    // start the message broker. It is used to tie all the modules together.
     auto broker = std::make_shared<Cfabric::Broker<Messages::MessageVariants>>();
 
     // Initialize modules
@@ -78,8 +120,14 @@ int main() {
     UserInterface ui(broker);
 
     // Simulate application flow
+    spdlog::info("Main: Starting the application");
+    spdlog::info("Main: starting user-interactive flow");
     ui.getUserInput();
-    processor.processAndPublish("Some data");
+    spdlog::info("Main: starting batch flow");
+    // Simulate batch data processing
+    processor.processAndPublish("Batch data");
+    spdlog::info("Main: stopping the application");
+    broker->publish(Messages::StopSignal());
 
     return 0;
 }
