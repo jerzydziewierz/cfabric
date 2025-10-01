@@ -42,7 +42,7 @@ CFabric provides a flexible and efficient way to implement a publish-subscribe p
 Key features of CFabric include:
 - Broker-based pub-sub communication pattern
 - In-memory-only operation, no network
-    - If you need your messages to go to a different process (beyond a befriended thread), you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp)
+    - If you need your messages to go to a different process (beyond a befriended thread), you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp) or [ROS](https://docs.ros.org/)
 - The handler for the message is resolved at compile time from the message type 
 - Focus on memory safe operation, with no memory leaks or undefined behaviour
 - No external dependencies, simple to integrate
