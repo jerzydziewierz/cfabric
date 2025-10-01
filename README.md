@@ -43,20 +43,20 @@ Key features of CFabric include:
 - Broker-based pub-sub communication pattern
 - In-memory-only operation, no network
     - If you need your messages to go to a different process (beyond a befriended thread), you are probably thinking about [mosquitto](https://mosquitto.org/documentation/) and [https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp) or [ROS](https://docs.ros.org/)
-- The handler for the message is resolved at compile time from the message type 
+- The handler for the message is resolved at compile time from the message type - "zero cost abstraction" at runtime
 - Focus on memory safe operation, with no memory leaks or undefined behaviour
 - No external dependencies, simple to integrate
 - Simple and easy to extend or customize with e.g. message filtering, asynchronous operation, work queues, etc.
 - Useful error messages for common problems
-- No restrictions on the message data types. You can also have an empty struct as a message type, which is useful for signaling notifications.
+- No restrictions on the message data types. You can also have an empty struct as a message type, which is useful for signaling notifications or events.
 - One can have multiple brokers in the same program, each with its own set of message types, to further separate concerns and subsystems
 
 ## What CFabric doesn't do natively
 
 - Test for message loops. If the message handler causes the sender to create a message that will cause an infinite loop, or even a chain that is too long, then the program will segfault on stack overflow.
-   - You can prevent that by adding "Time To Live" (TTL) field in the source message, and use that to limit recursion.
+   - You can prevent that by adding "Time To Live" (TTL) field in the source message, and use that to limit recursion. But it's better to simply design your system so that loops cannot occur. This is not as difficult as it sounds.
 - Asynchronous operation. By default, all interactions are eager and synchronous - for simplicity - "deep-first".
-    - You can extend the operation to be asynchronous as per example in `src/demo2.cpp`
+    - You can extend the operation to be asynchronous as per example in `src/demo2.cpp` -- but it might be better not to do that until you understand your reason and ready to deal with increased complexity.
     - You can also use a worker pool to concurrently process messages in parallel, or use a message queue to buffer messages.
 
 ## Installation
